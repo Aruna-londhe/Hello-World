@@ -1,0 +1,972 @@
+cat filepath/filename
+
+1) Write a shell script to display the current date and time, the name of the logged-in user, and the name of the shell being used. 
+<<<>>>>
+#!/bin/bash
+
+echo "Current date and time: $(date)"
+echo "Logged-in user: $(whoami)"
+echo "Shell being used: $SHELL"
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2) Create a shell script to generate a multiplication table (1 to 10) for numbers from 1 to 5 
+using nested loops. Save the output to a file and display the file contents.
+<<<<>>>>
+#!/bin/bash
+
+output_file="multiplication_table.txt"
+
+> "$output_file"
+
+for i in {1..5}
+do
+  echo "Multiplication Table for $i" >> "$output_file"
+  for j in {1..10}
+  do
+    echo "$i x $j = $((i * j))" >> "$output_file"
+  done
+  echo "------------------------" >> "$output_file"
+done
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3) Write a script that recursively searches for all .txt files in a directory and its subdirectories. For each file, count the number of lines containing the word "error" and append the file name and count to a report file.
+<<<<>>>>
+#!/bin/bash
+
+echo "Enter directory path:"
+read dir
+
+report="report.txt"
+> "$report"
+
+find "$dir" -type f -name "*.txt" | while read file
+do
+    count=$(grep -c "error" "$file")
+    echo "File: $file | Error Count: $count" >> "$report"
+done
+
+echo "Report generated in $report"
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+4) Develop a script that accepts a hostname or IP address as input and checks its network availability using ping. If reachable, append a success message to /home/$USERNAME/$filename with a timestamp; otherwise, append a failure message. (nano network_check.sh)
+<<<<<<<<<<<<<<>>>>>>>>>>>>>>
+#!/bin/bash
+
+read -p "Enter hostname or IP address: " host
+
+filename="network_status.log"
+
+USERNAME=$(whoami)
+
+filepath="/home/$USERNAME/$filename"
+
+timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+
+if ping -c 1 "$host" > /dev/null 2>&1
+then
+  echo "$timestamp - SUCCESS: $host is reachable" >> "$filepath"
+else
+  echo "$timestamp - FAILURE: $host is not reachable" >> "$filepath"
+fi
+
+output execute: cat /home/$USER/network_status.log 
+"output show in notepad"
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+4) Write a script to monitor CPU usage using the top command. The script should run for a
+specified number of iterations and log the CPU usage in each iteration. Use continue to skip logging if CPU usage is below 10% and break if CPU usage exceeds 90%. (nano cpu_monitor.sh)
+<<<<<<<<<<<<<<<>>>>>>>>>>>>>>
+#!/bin/bash
+
+# Ask user for number of iterations
+echo "Enter number of iterations:"
+read ITERATIONS
+
+LOGFILE="cpu_usage.log"
+echo "CPU Monitoring Started at $(date)" > $LOGFILE
+
+# Loop for specified iterations
+for (( i=1; i<=ITERATIONS; i++ ))
+do
+    # Get CPU idle percentage
+    IDLE=$(top -bn1 | grep "Cpu(s)" | awk '{print $8}')
+
+    # Calculate CPU usage
+    CPU_USAGE=$(awk "BEGIN {print 100 - $IDLE}")
+
+    # If CPU usage is below 10%, skip logging
+    if (( $(echo "$CPU_USAGE < 10" | bc -l) ))
+    then
+        continue
+    fi
+
+file exscute cat cpu_usage.log (viwe log file)
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+6) Write a script that processes a log file to extract and display IP addresses, date-time stamps, and error messages using regular expressions. Validate that only properly formatted IP addresses are extracted. (nano log_processor.sh)
+<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+LOGFILE="server.log"
+
+if [ ! -f "$LOGFILE" ]; then
+    echo "Log file not found!"
+    exit 1
+fi
+
+echo "Valid IP | Date-Time | Error Message"
+echo "------------------------------------"
+
+while read -r line
+do
+    IP=$(echo "$line" | grep -oE '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b')
+
+    DATETIME=$(echo "$line" | grep -oE '\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\]')
+
+    ERROR_MSG=$(echo "$line" | grep -oE 'ERROR.*')
+
+    if [[ -n "$IP" && -n "$DATETIME" && -n "$ERROR_MSG" ]]; then
+        echo "$IP | $DATETIME | $ERROR_MSG"
+    fi
+
+done < "$LOGFILE"
+
+file execute cat server.log
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+7) Write a script that processes a log file to extract and display IP addresses, date-time stamps,cand error messages using regular expressions. Validate that only properly formatted IP addresses are extracted.
+<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+is_prime() {
+    num=$1
+
+        if [ "$num" -le 1 ]; then
+        echo "Not Prime"
+        return
+    fi
+
+    for (( i=2; i<=num/2; i++ ))
+    do
+        if [ $((num % i)) -eq 0 ]; then
+            echo "Not Prime"
+            return
+        fi
+    done
+
+    echo "Prime"
+}
+
+echo "Enter a number:"
+read number
+
+result=$(is_prime $number)
+
+echo "The number $number is: $result"
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+8) Write a script to monitor the size of a directory. If the directory exceeds a specified size (e.g.,500 MB), append a warning message to /home/$USERNAME/$filename. Include the size
+and time of occurrence in the message. (nano moniter.sh)
+<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+# Configuration
+DIR_TO_MONITOR="/home/exam1"
+THRESHOLD=500   # MB
+USERNAME=$(whoami)
+filename="dir_size_warning.log"
+LOGFILE="/home/$USERNAME/$filename"
+
+# Get directory size in MB
+DIR_SIZE=$(du -sm "$DIR_TO_MONITOR" 2>/dev/null | awk '{print $1}')
+
+# Get current time
+CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+
+# Check size
+if [ "$DIR_SIZE" -gt "$THRESHOLD" ]; then
+    echo "WARNING: Directory size exceeded" >> "$LOGFILE"
+    echo "Directory: $DIR_TO_MONITOR" >> "$LOGFILE"
+    echo "Size: ${DIR_SIZE} MB" >> "$LOGFILE"
+    echo "Time: $CURRENT_TIME" >> "$LOGFILE"
+    echo "-----------------------------" >> "$LOGFILE"
+fi
+after execute cat path/dir_size_warning.log
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+9) Given a CSV file with columns for Name, Department, Salary, and Join Date, write a script using awk to: 
+● Calculate the average salary of employees in each department. 
+● Identify employees who have been with the company for more than 5 years. 
+<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>
+employees.csv
+Name,Department,Salary,JoinDate
+Amit,IT,50000,2018-03-10
+Neha,HR,40000,2016-07-15
+Raj,IT,60000,2015-01-20
+Priya,HR,45000,2022-05-01
+
+awk -F',' '
+NR > 1 {
+    # Extract fields
+    name = $1
+    dept = $2
+    salary = $3
+    join_date = $4
+
+    # -------- PART 1: Average Salary --------
+    sum[dept] += salary
+    count[dept]++
+
+    # -------- PART 2: Experience > 5 years --------
+    split(join_date, d, "-")
+    join_year = d[1]
+
+    current_year = strftime("%Y")
+    experience = current_year - join_year
+
+    if (experience > 5) {
+        print "Employee >5 years:", name
+    }
+}
+
+END {
+    print "\nAverage Salary by Department:"
+    for (d in sum) {
+        avg = sum[d] / count[d]
+        print d, ":", avg
+    }
+}
+' employees.csv
+
+Run:
+awk -f script.awk employees.csv
+OUtput:
+Employee >5 years: Amit
+Employee >5 years: Neha
+Employee >5 years: Raj
+
+Average Salary by Department:
+IT : 55000
+HR : 42500
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+10)  Write a script to automate daily incremental backups of a directory. Use tar to archive files modified in the last 24 hours. Create a cron job to schedule this script at 1:00 AM daily. Include error handling to log failures to /home/userlog. (Note: use AWS EC2)
+ (nano backup.sh)
+<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+SOURCE_DIR="/home/ec2-user/data"
+
+BACKUP_DIR="/home/ec2-user/backups"
+
+LOG_FILE="/home/userlog/backup.log"
+
+mkdir -p "$BACKUP_DIR"
+mkdir -p "/home/userlog"
+
+DATE=$(date +%Y-%m-%d_%H-%M-%S)
+
+BACKUP_FILE="$BACKUP_DIR/backup_$DATE.tar.gz"
+
+find "$SOURCE_DIR" -type f -mtime -1 | tar -czf "$BACKUP_FILE" -T -
+
+if [ $? -eq 0 ]; then
+    echo "[$(date)] Backup successful: $BACKUP_FILE" >> "$LOG_FILE"
+else
+    echo "[$(date)] ERROR: Backup failed!" >> "$LOG_FILE"
+fi
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+11) Write a script to back up the directory /home/user/data into a folder named /backup with a timestamped subdirectory. Ensure your script displays a message upon successful 
+completion of the backup. 
+Explanation: 
+● SOURCE: The directory to be backed up.  
+● DESTINATION: The directory where the backup will be stored.  
+● DATE: Captures the current date and time to create a unique backup folder.  
+● mkdir -p $DESTINATION/$DATE: Creates the backup directory if it does not exist.  
+● cp -r $SOURCE $DESTINATION/$DATE: Copies the contents of the source 
+directory to the backup directory.  
+● echo "Backup completed on $DATE": Outputs a message indicating the completion 
+of the backup. (nano backup.sh)
+<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+# SOURCE: Directory to be backed up
+SOURCE="/home/user/data"
+
+# DESTINATION: Directory where backups will be stored
+DESTINATION="/backup"
+
+# DATE: Current date and time for unique backup folder
+DATE=$(date +"%Y-%m-%d_%H-%M-%S")
+
+# Create the backup directory if it does not exist
+mkdir -p "$DESTINATION/$DATE"
+
+# Copy the source directory to the backup directory
+cp -r "$SOURCE" "$DESTINATION/$DATE"
+
+# Display success message
+echo "Backup completed successfully on $DATE"
+
+[after execute To verify: ls /home/exam1/backup ]
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2) Write a script that checks disk usage for all partitions and warns the user if the usage 
+exceeds 80%. 
+Explanation: 
+● THRESHOLD: Sets the disk usage percentage threshold.  
+● df -H: Lists disk usage in human-readable format.  
+● grep -v '^Filesystem tmpfs|cdrom': Filters out unnecessary lines.  
+● awk '{ print $5 " " $1 }': Extracts the usage percentage and partition name.  
+● while read output: Iterates over each line of the filtered output.  
+● usage=$(echo $output | awk '{print $1}' | cut -d'%' -f1): Extracts the usage 
+percentage.  
+● partition=$(echo $output | awk '{print $2}'): Extracts the partition name. if [ $usage -ge $THRESHOLD ]; then: Checks if the usage exceeds the threshold. echo 
+"Warning: Disk usage on partitionisat{usage}%": Prints a warning message.(nano disk_usage_check.sh)
+<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>.
+#!/bin/bash
+
+THRESHOLD=80
+
+df -H | grep -v '^Filesystem\|tmpfs\|cdrom' | awk '{ print $5 " " $1 }' | while read output
+do
+    usage=$(echo $output | awk '{print $1}' | cut -d'%' -f1)
+
+    partition=$(echo $output | awk '{print $2}')
+
+    if [ "$usage" -ge "$THRESHOLD" ]; then
+        echo "Warning: Disk usage on partition $partition is at ${usage}%"
+    fi
+done
+
+after execute FOR MANULLY CHECK:(optional)
+df -H
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3) Write a script to check the status of the Jenkins.service service and start it if it is not 
+running. Display appropriate messages based on the service's state. 
+Explanation: 
+● SERVICE: The name of the service to check.  
+● systemctl is-active --quiet $SERVICE: Checks if the service is running. echo 
+"$SERVICE is running": Prints a message if the service is running. systemctl start 
+$SERVICE: Starts the service if it is not running. (nano check_jenkins.sh)
+<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+# SERVICE: Name of the service to check
+SERVICE="jenkins"
+
+# Check if the service is running
+if systemctl is-active --quiet $SERVICE; then
+    echo "$SERVICE service is running"
+else
+    echo "$SERVICE service is not running"
+    echo "Starting $SERVICE service..."
+    systemctl start $SERVICE
+
+    # Check again after starting
+    if systemctl is-active --quiet $SERVICE; then
+        echo "$SERVICE service started successfully"
+    else
+        echo "Failed to start $SERVICE service"
+    fi
+fi
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+4) Write a script to check the reachability of a host named google.com and log the result into a 
+file named ping_results.log. 
+Explanation: 
+● HOST: The hostname to check.  
+● OUTPUT_FILE: The file to write the output to.  
+● ping -c 1 $HOST &> /dev/null: Pings the host once, suppressing output.  
+● echo "$HOST is reachable" >> $OUTPUT_FILE: Writes to the output file if the host 
+is reachable.  
+● echo "$HOST is not reachable" >> $OUTPUT_FILE: Writes to the output file if the 
+host is not reachable.(nano ping_check.sh)
+<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+# HOST: Hostname to check
+HOST="google.com"
+
+# OUTPUT_FILE: File to store ping results
+OUTPUT_FILE="ping_results.log"
+
+# Ping the host once and suppress output
+if ping -c 1 $HOST &> /dev/null; then
+    echo "$HOST is reachable" >> $OUTPUT_FILE
+else
+    echo "$HOST is not reachable" >> $OUTPUT_FILE
+fi
+
+after execute cat ping_results.log
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+5)Write a script to back up a database named school into the directory /backups with a 
+timestamped filename. The script should prompt the user for the database password. 
+Explanation: 
+● DB_NAME: The name of the database to back up.  
+● BACKUP_DIR: The directory where the backup will be stored.  
+● DATE: Captures the current date and time.  
+● mysqldump -u root -p $DB_NAME> $BACKUP_DIR/$DB_NAME-$DATE.sql: 
+Dumps the database to a SQL file.  
+● echo "Database backup completed: $BACKUP_DIR/$DB_NAME-$DATE.sql": 
+Outputs a message indicating the completion of the backup. (nano db_backup.sh)
+<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+DB_NAME="school"
+
+BACKUP_DIR="/backups"
+
+DATE=$(date +"%Y-%m-%d_%H-%M-%S")
+
+mkdir -p $BACKUP_DIR
+
+mysqldump -u root -p $DB_NAME > $BACKUP_DIR/$DB_NAME-$DATE.sql
+
+echo "Database backup completed: $BACKUP_DIR/$DB_NAME-$DATE.sql"
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+6) Write a script that stores the system uptime in a file named system_uptime.log and appends 
+a timestamp to each entry.
+Explanation: 
+● uptime -p: Prints the system uptime in a human-readable format. (nano uptime.sh)
+<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+LOG_FILE="system_uptime.log"
+
+TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+
+UPTIME=$(uptime -p)
+
+echo "[$TIMESTAMP] $UPTIME" >> "$LOG_FILE"
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+7) Write a command or script to display all TCP and UDP listening ports on a system, 
+including their associated processes. 
+Explanation: 
+● netstat -tuln: Lists all TCP and UDP listening ports.  
+● grep LISTEN: Filters the output to show only listening ports. 
+<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>
+command: 
+ss -tulnp
+
+
+#!/bin/bash
+
+echo "Listening TCP and UDP Ports with Processes:"
+echo "------------------------------------------"
+
+sudo netstat -tulnp | grep LISTEN
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+8) Write a script that updates the package list, upgrades installed packages, removes 
+unnecessary packages, and cleans up the cache. Include appropriate messages at each step. 
+Explanation: 
+● apt-get update: Updates the package list.  
+● apt-get upgrade -y: Upgrades all installed packages.   
+● apt-get clean: Cleans up the package cache.  
+● apt-get autoremove -y: Removes unnecessary packages.  
+● echo "System packages updated and cleaned up": Outputs a message indicating  
+● the completion of the update and cleanup. (nano system_update.sh)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+echo "--------------------------------------"
+echo "Starting system update process..."
+echo "--------------------------------------"
+
+echo "Updating package list..."
+sudo apt-get update
+
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to update package list!"
+    exit 1
+fi
+
+echo "Upgrading installed packages..."
+sudo apt-get upgrade -y
+
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to upgrade packages!"
+    exit 1
+fi
+
+echo "Removing unnecessary packages..."
+sudo apt-get autoremove -y
+
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to remove unnecessary packages!"
+    exit 1
+fi
+
+echo "Cleaning package cache..."
+sudo apt-get clean
+
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to clean cache!"
+    exit 1
+fi
+
+echo "--------------------------------------"
+echo "System packages updated and cleaned up"
+echo "--------------------------------------"
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+9) Write a script to check the response times of the URLs https://example.com and 
+https://google.com and display the results in the format: "Response time for [URL]: [time] 
+seconds" 
+Explanation: 
+● URLS: An array of URLs to check.  
+● for URL in "${URLS[@]}": Iterates over each URL.  
+● curl -o /dev/null -s -w '%{time_total}\n' $URL: Uses curl to fetch the URL and 
+measure the total response time.  
+● echo "Response time for $URL: $RESPONSE_TIME seconds": Prints the response 
+time for each URL. (nano response_time.sh)
+<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>
+#!/bin/bash
+
+URLS=("https://example.com" "https://google.com")
+
+for URL in "${URLS[@]}"
+do
+    RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}\n' $URL)
+
+    echo "Response time for $URL: $RESPONSE_TIME seconds"
+done
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+10)  Write a command to display the top 10 processes consuming the most memory on a system. 
+Explanation:
+ps aux: Lists all running processes.  
+● --sort--% mem: Sorts the processes by memory usage in descending order.  
+● head -n 10: Displays the top 10 processes by memory usage. 
+<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>
+Command: 
+ps aux --sort=-%mem | head -n 10
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Terraform :
+
+1)  Set up a sample project using manual configuration for an Ubuntu EC2 instance, 
+incorporating the following steps: 
+A. Download and install the apache2 service. 
+B. Download the sample project files. 
+C. Transfer all files and directories to the designated location. 
+Ensure that upon completion, the sample project is operational, accessible through 
+the private IP address via a web browser.
+<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>
+sudo apt update
+sudo apt install apache2 -y
+sudo systemctl start apache2
+sudo systemctl enable apache2
+sudo systemctl status apache2
+sudo apt install git -y
+git clone https://github.com/sample-project-repo.git
+wget https://example.com/sample-project.zip
+unzip sample-project.zip
+/var/www/html
+sudo cp -r sample-project/* /var/www/html/
+sudo chown -R www-data:www-data /var/www/html/
+sudo chmod -R 755 /var/www/html/
+sudo systemctl restart apache2
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2)  Write a Terraform configuration file to create an AWS EC2 instance in the 
+"ap-south-1" region. The instance should use the following specifications: 
+● AMI ID: ami-00bb6a80f (Ubuntu image lts) 
+● Instance Type: t2.micro 
+● The instance should be tagged with Name = ExampleAppServerInstance. 
+● Ensure the correct AWS provider and version constraints are configured. 
+Once the configuration is complete: 
+1. Initialize Terraform in the directory containing the file. 
+2. Validate the configuration. 
+3. Plan the changes Terraform will apply. 
+4. Apply the configuration to create the instance. 
+Instructions: 
+● Provide all Terraform CLI commands used in steps 1–4. 
+● Verify the instance is created in your AWS Management Console. 
+<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+nano main.tf
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_instance" "example" {
+  ami           = "ami-00bb6a80f"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "ExampleAppServerInstance"
+  }
+}
+
+terraform init
+terraform validate
+terraform plan
+terraform apply
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3) You are tasked with creating an AWS EC2 instance using Terraform. The configuration 
+includes the use of a variables.tf file to dynamically assign the Name tag for the EC2 
+instance. 
+Tasks: 
+● Update the main.tf file to use the variable defined in variables.tf for the Name 
+tag of the instance. 
+● Replace the hardcoded Name tag in main.tf with the variable instance_name. 
+<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>
+variables.tf
+
+variable "instance_name" {
+  description = "Name of the EC2 instance"
+  type        = string
+  default     = "ExampleAppServerInstance"
+}
+
+main.tf
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_instance" "example" {
+  ami           = "ami-00bb6a80f"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = var.instance_name
+  }
+}
+
+terraform init
+terraform validate
+terraform plan
+terraform apply
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+8) You are working with a Terraform configuration to create an AWS EC2 instance. The 
+configuration includes an outputs.tf file to display key details about the created 
+instance. 
+Tasks: 
+i. Add the following output values in outputs.tf to display:
+● The ID of the created EC2 instance.
+● The Public IP address of the EC2 instance.
+ii.Verify the outputs after applying the Terraform configuration. 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>
+nano outputs.tf
+
+output "instance_id" {
+  description = "ID of the EC2 instance"
+  value       = aws_instance.example.id
+}
+
+output "public_ip" {
+  description = "Public IP of the EC2 instance"
+  value       = aws_instance.example.public_ip
+}
+
+terraform apply
+terraform output
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+9) You are tasked with deploying a web application on an AWS EC2 instance using 
+Terraform. The configuration includes: 
+i.Creating a security group to allow inbound SSH and HTTP traffic. 
+ii. Launching an EC2 instance with the following specifications:
+● AMI ID: ami-00bb6a80f (Ubuntu image lts)
+● Instance Type: t2.micro
+● Security group association for SSH and HTTP traffic.
+● Key Pair: Use mykey for SSH access.
+● Attach a root block device with a 10 GiB SSD.
+iii.Using a user data script to: 
+● Install required software (apache2, wget, unzip, vim). 
+● Download, extract, and deploy the "Mini Finance" template from 
+https://www.tooplate.com/zip-templates/2135_mini_finance.zip. 
+● Serve the application via Apache. 
+Tasks: 
+i. Explain the purpose of the security group in this configuration.
+ii.Write the steps required to initialize, plan, and apply the Terraform
+configuration. 
+iii.After applying the configuration: 
+● Verify that the instance is running in the AWS Management 
+Console. 
+Access the web application using the instance's public IP 
+address in a browser. 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>
+terraform init
+terraform plan
+terraform apply
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Git & GitHub
+
+1)  Git and GitHub Basics Workflow 
+A. Clone any public repository on GitHub using the 'git clone' command. 
+B. Create a public repository with a 'README.md' file, and subsequently modify 
+the 'README.md' file to articulate the purpose of the repository. Finally, 
+commit those changes with an appropriate message. 
+C. Globally configure your username and email on the local machine, utilize the 
+'git config' command. 
+D. Pull the 'README.md' file from the previously created public repository 
+E. Edit the 'README.md' file and create an 'index.html' file, then add both files to 
+the staging area. 
+F. Push the changes made to the previously created files to the repository, and use 
+the upstream flag to push changes to that repository.
+<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>
+git clone <repo-url>
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+git pull origin main
+git add README.md index.html
+git commit -m "Updated files"
+git push -u origin main
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2) Branching, Merging, and Diffs Workflow 
+a) Refer to Figure 0.1 where: 
+● C0 (commit): Indicates the addition of an h1 tag in 'README.md'. 
+● C1 (commit): Creation of a new txt file. 
+● C2 (commit): Modification in the txt file.  
+Push the changes made above to the remote repository of the origin main 
+branch. 
+<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>
+git branch
+git checkout main
+nano README.md
+<h1>My Project</h1>
+git add README.md
+git commit -m "C0: Added h1 tag to README.md"
+touch file.txt
+echo "This is a new text file" > file.txt
+git add file.txt
+git commit -m "C1: Created new txt file"
+nano file.txt
+git add file.txt
+git commit -m "C2: Modified txt file"
+git push -u origin main
+git log --oneline
+
+b) Refer to Figure 0.2 where: 
+● iss53 (issue53): “iss53” is the name of a branch. 
+● C3 (commit): Denotes the creation of the “index.html” file and updating 
+“readme.md” in the “iss53” branch. 
+To discern the differences between commits C1 and C2, as well as to compare 
+the “main” branch with “iss53”, utilize the “git diff' command”. Push the 
+changes made on the 'iss53' branch to the remote repository.
+<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>
+git checkout -b iss53
+touch index.html
+git add index.html README.md
+git commit -m "C3 commit"
+
+git diff <C1> <C2>
+git diff main iss53
+
+git push -u origin iss53
+
+c) Refer to Figure 0.3 where: 
+● hotfix: 'hotfix' is the name of a branch. 
+● C4 (commit): Denotes the update of the 'new txt file' in the 'hotfix' 
+branch. 
+Additionally, push the changes made on the 'hotfix' branch to the remote 
+repository. 
+<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>
+git checkout main
+git checkout -b hotfix
+git add file.txt
+git commit -m "C4 commit"
+git push -u origin hotfix
+
+d) Merge the 'hotfix' branch into the 'main' branch and delete the 'hotfix' branch:
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>
+git checkout main
+git merge hotfix
+git push origin main
+git branch -d hotfix
+git push origin --delete hotfix
+
+e) Merge the 'iss53' branch into the 'main' branch and delete the 'iss53' branch:
+<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>
+git checkout main
+git merge iss53
+git push origin main
+git branch -d iss53
+git push origin --delete iss53
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Docker
+
+1) Perform the following tasks using Docker state commands:
+A. Pull the Ubuntu image tagged as 20.04 from Docker Hub. 
+Command: docker pull ubuntu:20.04
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+B. List all available images. 
+Command: docker image ls
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+C. Pull the Ubuntu image tagged as latest from Docker Hub. 
+Command: docker pull ubuntu:latest
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+D. Remove the Ubuntu image tagged as 20.04. 
+Command: docker rmi ubuntu:20.04
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+E. Run a container named ubuntu-os interactively with detached mode, using the 
+Ubuntu image tagged as latest. 
+Command: docker run -it -d --name ubuntu-os ubuntu:latest
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+F. Stop the running container ubuntu-os. 
+Command: docker stop ubuntu-os
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+G. Restart the container ubuntu-os. 
+Command: docker restart ubuntu-os
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+H. List all containers. 
+Command: docker ps -a
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+I. Create a directory within the running container ubuntu-os in detached mode. 
+Command: docker exec -d ubuntu-os mkdir /mydir
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+J. Check whether the folder is created within the container or not. 
+Command: docker exec ubuntu-os ls /
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+K. Stop the container ubuntu-os. 
+Command: docker stop ubuntu-os
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+L. Prune all containers. 
+Command: docker container prune
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2) Perform the following tasks using Docker commands to manage a PostgreSQL instance: 
+
+A. Pull the latest version of the PostgreSQL image from Docker Hub. 
+Command: docker pull postgres:latest
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+B. Set up a container named postres-user1 with appropriate environment variables 
+and ensure it's in detached mode. 
+Command:
+docker run -d --name postgres-user1 \
+-e POSTGRES_USER=user1 \
+-e POSTGRES_PASSWORD=pass123 \
+-e POSTGRES_DB=mydb \
+postgres:latest
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+C. Connect to the PostgreSQL instance within the container postres-user1 using the 
+command psql -U postgres. 
+Command: docker exec -it postgres-user1 psql -U postgres
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+D. Create a new database within the PostgreSQL instance. 
+Command:
+docker exec -it postgres-user1 psql -U postgres
+CREATE DATABASE mynewdb;
+\l
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+E. Stop the container named postres-user1. 
+Command: docker stop postgres-user1
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+F. Delete the container named postres-user1. 
+Command:docker rm postgres-user1
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2) Construct a custom Dockerfile to containerize a Node.js HTTP server, build an image 
+from it, and then initiate a container. 
+<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>
+docker build -t node-http-app .
+docker run -d -p 3000:3000 --name node-container node-http-app
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3) Push the previously built image to Docker Hub using the following steps: 
+A. Tag your Docker image with your Docker Hub username/repository name. 
+B. Log in to Docker Hub using the docker login command. 
+C. Push the tagged image to Docker Hub using the docker push command.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>
+docker tag node-http-app myusername/node-http-app:latest
+docker login
+docker push myusername/node-http-app:latest
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Advance Docker
+
+1) Mongo-Express Application (Manual using Docker commands) 
+A. Run a container using the Mongo image, ensuring to set suitable environment 
+variables, map ports, assign container names, and connect to a custom network. 
+Command: 
+docker network create mongo-net
+docker run -d \
+--name mongodb \
+--network mongo-net \
+-p 27017:27017 \
+-e MONGO_INITDB_ROOT_USERNAME=admin \
+-e MONGO_INITDB_ROOT_PASSWORD=pass123 \
+mongo:latest
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+B. Run a container using the mongo-express image, ensuring to set appropriate 
+environment variables, map ports, assign container names, and connect it to the 
+same custom network as the Mongo container? Additionally, how would you 
+ensure that both containers, Mongo and mongo-express, are interconnected and 
+accessible via the browser, particularly accessing the mongo-express application. 
+Command:
+docker network create mongo-net
+
+docker run -d --name mongodb --network mongo-net -p 27017:27017 \
+-e MONGO_INITDB_ROOT_USERNAME=admin \
+-e MONGO_INITDB_ROOT_PASSWORD=pass123 mongo:latest
+
+docker run -d --name mongo-express --network mongo-net -p 8081:8081 \
+-e ME_CONFIG_MONGODB_ADMINUSERNAME=admin \
+-e ME_CONFIG_MONGODB_ADMINPASSWORD=pass123 \
+-e ME_CONFIG_MONGODB_SERVER=mongodb \
+mongo-express:latest
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2) Mongo-Express Application (Using docker-compose.yml) 
+A. Run a container using the Mongo image, ensuring to set suitable environment 
+variables, map ports, assign container names, and connect to a default network. 
+<<<<<<<<<<<<<<>>>>>>>>>>>>>>>
+nano docker-compose.yml
+
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: pass123
+
+docker compose up -d
+docker ps
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+B. Run a container using the mongo-express image, ensuring to set appropriate 
+environment variables, map ports, assign container names, and connect it to the 
+same default network as the Mongo container? Additionally, how would you 
+ensure that both containers, Mongo and mongo-express, are interconnected and 
+accessible via the browser, particularly accessing the mongo-express application. 
+Docker-compose.yml 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>
+nano docker-compose.yml
+
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: pass123
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass123
+      ME_CONFIG_MONGODB_SERVER: mongodb
+    depends_on:
+      - mongodb
+
+
+docker compose up -d
